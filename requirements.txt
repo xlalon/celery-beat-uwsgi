@@ -1,5 +1,4 @@
 celery
 Flask
-gevent
 redis
 uWSGI
