@@ -1,0 +1,55 @@
+networks:
+  net-celery-beat:
+    external: true
+
+services:
+  beat-master:
+    image: celery-beat-uwsgi
+    container_name: beat-master
+    environment:
+      UWSGI_VALOR: 90
+    networks:
+      net-celery-beat:
+        ipv4_address: 177.7.0.11
+  beat-standby-0:
+    image: celery-beat-uwsgi
+    container_name: beat-standby-0
+    environment:
+      UWSGI_VALOR: 80
+    networks:
+      net-celery-beat:
+        ipv4_address: 177.7.0.12
+  beat-standby-1:
+    image: celery-beat-uwsgi
+    container_name: beat-standby-1
+    environment:
+      UWSGI_VALOR: 70
+    networks:
+      net-celery-beat:
+        ipv4_address: 177.7.0.13
+  worker-0:
+    image: celery-beat-uwsgi
+    container_name: worker-0
+    command: ["celery", "-A", "app", "worker", "--loglevel=info"]
+    networks:
+      net-celery-beat:
+        ipv4_address: 177.7.0.14
+    depends_on:
+      - redis
+  worker-1:
+    image: celery-beat-uwsgi
+    container_name: worker-1
+    command: [ "celery", "-A", "app", "worker", "--loglevel=info" ]
+    networks:
+      net-celery-beat:
+        ipv4_address: 177.7.0.15
+    depends_on:
+      - redis
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      net-celery-beat:
+        ipv4_address: 177.7.0.16
